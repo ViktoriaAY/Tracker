@@ -1,10 +1,3 @@
-//
-//  TrackerUITestsLaunchTests.swift
-//  TrackerUITests
-//
-//  Created by Виктория Юношева on 01.09.2026.
-//
-
 import XCTest
 
 final class TrackerUITestsLaunchTests: XCTestCase {
