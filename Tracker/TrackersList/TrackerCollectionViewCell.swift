@@ -73,16 +73,25 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Configuration Method
-    
     func configure(with tracker: Tracker, isCompleted: Bool, completedDays: Int) {
         titleLabel.text = tracker.title
         titleLabel.textColor = .whitetracker
         cardView.backgroundColor = tracker.color
         
         emojiLabel.text = tracker.emoji
+        let mod10 = completedDays % 10
+        let mod100 = completedDays % 100
+        let daysString: String
         
-        daysLabel.text = "\(completedDays) дней"
+        if mod10 == 1 && mod100 != 11 {
+            daysString = "\(completedDays) день"
+        } else if mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20) {
+            daysString = "\(completedDays) дня"
+        } else {
+            daysString = "\(completedDays) дней"
+        }
+        
+        daysLabel.text = daysString
         daysLabel.textColor = .blacktracker
         
         completeButton.backgroundColor = tracker.color
@@ -97,7 +106,6 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         }
     }
 
-    
     // MARK: - Setup UI
     
     private func setupHierarchy() {
