@@ -261,7 +261,6 @@ final class HabitCreationViewController: UIViewController {
         let trackerStore = TrackerStore()
         
         do {
-            // Используем БЕЗОПАСНОЕ свойство класса self.categoryStore!
             try self.categoryStore.addCategory(title: "Домашний уют")
             if let categoryCoreData = try self.categoryStore.fetchCategoryCoreData(with: "Домашний уют") {
                 try trackerStore.createTracker(newTracker, categoryCoreData: categoryCoreData)
