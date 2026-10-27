@@ -39,6 +39,11 @@ final class TrackersViewController: UIViewController {
         search.layer.masksToBounds = true
         search.translatesAutoresizingMaskIntoConstraints = false
         
+        search.searchTextField.borderStyle = .none
+        search.searchTextField.backgroundColor = .clear
+        search.searchTextField.layer.cornerRadius = 0
+        search.searchTextField.layer.masksToBounds = false
+        
         let placeholderColor = UIColor.graytracker
         let placeholderAttributes: [NSAttributedString.Key: Any] = [
             .foregroundColor: placeholderColor
@@ -99,6 +104,7 @@ final class TrackersViewController: UIViewController {
     private var visibleCategories: [TrackerCategory] = []
     private var currentDate: Date = Date()
     private var completedTrackers: Set<TrackerRecord> = []
+    private lazy var categoryStore = TrackerCategoryStore()
     
     // MARK: - Lifecycle
     
@@ -121,16 +127,30 @@ final class TrackersViewController: UIViewController {
         setupHierarchy()
         setupConstraints()
         
-        let defaultCategory = TrackerCategory(title: "Домашний уют", trackers: [])
-        self.categories = [defaultCategory]
+        _ = TrackerCategory(title: "Домашний уют", trackers: [])
         
         let weekdayIndex = Calendar.current.component(.weekday, from: datePicker.date)
         filterTrackersByDate(weekdayIndex: weekdayIndex)
     }
-
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        loadTrackersFromCoreData()
+    }
     
     // MARK: - Setup Navigation Bar
+    
+    private func loadTrackersFromCoreData() {
+        let savedCategories = self.categoryStore.categories
+        
+        self.categories = savedCategories
+        
+        let weekdayIndex = Calendar.current.component(.weekday, from: datePicker.date)
+        filterTrackersByDate(weekdayIndex: weekdayIndex)
+        
+        collectionView.reloadData()
+    }
+    
     
     private func setupNavBar() {
         title = "Трекеры"
@@ -178,7 +198,6 @@ final class TrackersViewController: UIViewController {
         ])
     }
     
-    
     // MARK: - Actions
     
     @objc private func plusButtonTapped() {
@@ -190,7 +209,7 @@ final class TrackersViewController: UIViewController {
     
     private func filterTrackers(for weekdayIndex: Int) {
         collectionView.reloadData()
-    
+        
         let isTrackersEmpty = visibleCategories.isEmpty
         placeholderImageView.isHidden = !isTrackersEmpty
         placeholderLabel.isHidden = !isTrackersEmpty
@@ -221,7 +240,6 @@ final class TrackersViewController: UIViewController {
         
         filterTrackersByDate(weekdayIndex: weekdayIndex)
     }
-    
 }
 
 extension TrackersViewController: UICollectionViewDataSource {
@@ -315,7 +333,7 @@ extension TrackersViewController: HabitCreationViewControllerDelegate {
             if category.title == categoryTitle {
                 var newTrackers = category.trackers
                 newTrackers.append(tracker)
-    
+                
                 return TrackerCategory(title: category.title, trackers: newTrackers)
             }
             return category
@@ -345,12 +363,11 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 9
+        return 0
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         return CGSize(width: collectionView.frame.width, height: 46)
     }
-    
 }
 
 

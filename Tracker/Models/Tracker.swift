@@ -47,7 +47,7 @@ extension TrackerSchedule {
         if friday { days.append("Пт") }
         if saturday { days.append("Сб") }
         if sunday { days.append("Вс") }
-
+        
         if days.isEmpty {
             return ""
         }
