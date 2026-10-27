@@ -20,7 +20,6 @@ final class EmojiCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
         addSubview(emojiLabel)
         
         layer.cornerRadius = 16
@@ -34,8 +33,9 @@ final class EmojiCell: UICollectionViewCell {
         ])
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        nil
     }
     
     // MARK: - Public Methods

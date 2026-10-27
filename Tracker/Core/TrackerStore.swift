@@ -18,30 +18,30 @@ final class TrackerStore: NSObject {
     private var context: NSManagedObjectContext {
         return CoreDataStack.shared.context
     }
-
-       private lazy var fetchedResultsController: NSFetchedResultsController<TrackerCoreData> = {
-           let fetchRequest = NSFetchRequest<TrackerCoreData>(entityName: "TrackerCoreData")
-           fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \TrackerCoreData.title, ascending: true)]
-           
-           let controller = NSFetchedResultsController(
-               fetchRequest: fetchRequest,
-               managedObjectContext: self.context,
-               sectionNameKeyPath: nil,
-               cacheName: nil
-           )
-           controller.delegate = self
-           return controller
-       }()
-       
-       // MARK: - Public Properties
-       
-       var trackers: [Tracker] {
-           if fetchedResultsController.fetchedObjects == nil {
-               try? fetchedResultsController.performFetch()
-           }
-           guard let objects = fetchedResultsController.fetchedObjects else { return [] }
-           return objects.compactMap { tracker(from: $0) }
-       }
+    
+    private lazy var fetchedResultsController: NSFetchedResultsController<TrackerCoreData> = {
+        let fetchRequest = NSFetchRequest<TrackerCoreData>(entityName: "TrackerCoreData")
+        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \TrackerCoreData.title, ascending: true)]
+        
+        let controller = NSFetchedResultsController(
+            fetchRequest: fetchRequest,
+            managedObjectContext: self.context,
+            sectionNameKeyPath: nil,
+            cacheName: nil
+        )
+        controller.delegate = self
+        return controller
+    }()
+    
+    // MARK: - Public Properties
+    
+    var trackers: [Tracker] {
+        if fetchedResultsController.fetchedObjects == nil {
+            try? fetchedResultsController.performFetch()
+        }
+        guard let objects = fetchedResultsController.fetchedObjects else { return [] }
+        return objects.compactMap { tracker(from: $0) }
+    }
     
     // MARK: - Init
     
@@ -105,9 +105,9 @@ final class TrackerStore: NSObject {
         trackerCoreData.colorHex = hexString(from: tracker.color)
         
         if let schedule = tracker.schedule {
-            trackerCoreData.schelude = scheduleString(from: schedule)
+            trackerCoreData.schedule = scheduleString(from: schedule)
         } else {
-            trackerCoreData.schelude = ""
+            trackerCoreData.schedule = ""
         }
         
         trackerCoreData.category = categoryCoreData
@@ -120,7 +120,7 @@ final class TrackerStore: NSObject {
             let title = trackerCoreData.title,
             let emoji = trackerCoreData.emoji,
             let colorHex = trackerCoreData.colorHex,
-            let scheduleStr = trackerCoreData.schelude
+            let scheduleStr = trackerCoreData.schedule
         else { return nil }
         
         return Tracker(

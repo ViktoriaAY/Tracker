@@ -25,7 +25,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-   
+    
     private lazy var emojiLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14)
@@ -105,7 +105,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
             completeButton.alpha = 1.0
         }
     }
-
+    
     // MARK: - Setup UI
     
     private func setupHierarchy() {
@@ -119,37 +119,37 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     }
     
     private func setupConstraints() {
-           NSLayoutConstraint.activate([
-               cardView.topAnchor.constraint(equalTo: contentView.topAnchor),
-               cardView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-               cardView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-               cardView.heightAnchor.constraint(equalToConstant: 90),
-               
-               emojiBackgroundView.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 12),
-               emojiBackgroundView.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 12),
-               emojiBackgroundView.widthAnchor.constraint(equalToConstant: 24),
-               emojiBackgroundView.heightAnchor.constraint(equalToConstant: 24),
-               
-               emojiLabel.topAnchor.constraint(equalTo: emojiBackgroundView.topAnchor),
-               emojiLabel.bottomAnchor.constraint(equalTo: emojiBackgroundView.bottomAnchor),
-               emojiLabel.leadingAnchor.constraint(equalTo: emojiBackgroundView.leadingAnchor),
-               emojiLabel.trailingAnchor.constraint(equalTo: emojiBackgroundView.trailingAnchor),
-               
-               titleLabel.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 12),
-               titleLabel.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -12),
-               titleLabel.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -12),
-               
-               completeButton.topAnchor.constraint(equalTo: cardView.bottomAnchor, constant: 8),
-               completeButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
-               completeButton.widthAnchor.constraint(equalToConstant: 34),
-               completeButton.heightAnchor.constraint(equalToConstant: 34),
-               completeButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
-               
-               daysLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
-               daysLabel.trailingAnchor.constraint(equalTo: completeButton.leadingAnchor, constant: -8),
-               daysLabel.centerYAnchor.constraint(equalTo: completeButton.centerYAnchor)
-           ])
-       }
+        NSLayoutConstraint.activate([
+            cardView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            cardView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            cardView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            cardView.heightAnchor.constraint(equalToConstant: 90),
+            
+            emojiBackgroundView.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 12),
+            emojiBackgroundView.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 12),
+            emojiBackgroundView.widthAnchor.constraint(equalToConstant: 24),
+            emojiBackgroundView.heightAnchor.constraint(equalToConstant: 24),
+            
+            emojiLabel.topAnchor.constraint(equalTo: emojiBackgroundView.topAnchor),
+            emojiLabel.bottomAnchor.constraint(equalTo: emojiBackgroundView.bottomAnchor),
+            emojiLabel.leadingAnchor.constraint(equalTo: emojiBackgroundView.leadingAnchor),
+            emojiLabel.trailingAnchor.constraint(equalTo: emojiBackgroundView.trailingAnchor),
+            
+            titleLabel.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 12),
+            titleLabel.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -12),
+            titleLabel.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -12),
+            
+            completeButton.topAnchor.constraint(equalTo: cardView.bottomAnchor, constant: 8),
+            completeButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
+            completeButton.widthAnchor.constraint(equalToConstant: 34),
+            completeButton.heightAnchor.constraint(equalToConstant: 34),
+            completeButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
+            
+            daysLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
+            daysLabel.trailingAnchor.constraint(equalTo: completeButton.leadingAnchor, constant: -8),
+            daysLabel.centerYAnchor.constraint(equalTo: completeButton.centerYAnchor)
+        ])
+    }
     
     @objc private func completeButtonTapped() {
         delegate?.didTapCompleteButton(in: self)

@@ -83,7 +83,7 @@ final class ScheduleViewController: UIViewController {
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-    
+            
             scheduleTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
             scheduleTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             scheduleTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),

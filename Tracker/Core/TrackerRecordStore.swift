@@ -18,34 +18,34 @@ final class TrackerRecordStore: NSObject {
     private var context: NSManagedObjectContext {
         return CoreDataStack.shared.context
     }
-
+    
+    
+    private lazy var fetchedResultsController: NSFetchedResultsController<TrackerRecordCoreData> = {
+        let fetchRequest = NSFetchRequest<TrackerRecordCoreData>(entityName: "TrackerRecordCoreData")
+        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \TrackerRecordCoreData.date, ascending: true)]
         
-        private lazy var fetchedResultsController: NSFetchedResultsController<TrackerRecordCoreData> = {
-            let fetchRequest = NSFetchRequest<TrackerRecordCoreData>(entityName: "TrackerRecordCoreData")
-            fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \TrackerRecordCoreData.date, ascending: true)]
-            
-            let controller = NSFetchedResultsController(
-                fetchRequest: fetchRequest,
-                managedObjectContext: self.context,
-                sectionNameKeyPath: nil,
-                cacheName: nil
-            )
-            controller.delegate = self
-            return controller
-        }()
-        
-        // MARK: - Public Properties
-        
-        var records: [TrackerRecord] {
-            if fetchedResultsController.fetchedObjects == nil {
-                try? fetchedResultsController.performFetch()
-            }
-            guard let objects = fetchedResultsController.fetchedObjects else { return [] }
-            return objects.compactMap {
-                guard let id = $0.id, let date = $0.date else { return nil }
-                return TrackerRecord(id: id, date: date)
-            }
+        let controller = NSFetchedResultsController(
+            fetchRequest: fetchRequest,
+            managedObjectContext: self.context,
+            sectionNameKeyPath: nil,
+            cacheName: nil
+        )
+        controller.delegate = self
+        return controller
+    }()
+    
+    // MARK: - Public Properties
+    
+    var records: [TrackerRecord] {
+        if fetchedResultsController.fetchedObjects == nil {
+            try? fetchedResultsController.performFetch()
         }
+        guard let objects = fetchedResultsController.fetchedObjects else { return [] }
+        return objects.compactMap {
+            guard let id = $0.id, let date = $0.date else { return nil }
+            return TrackerRecord(id: id, date: date)
+        }
+    }
     
     // MARK: - Init
     

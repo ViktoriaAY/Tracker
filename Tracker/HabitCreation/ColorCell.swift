@@ -36,8 +36,9 @@ final class ColorCell: UICollectionViewCell {
         ])
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        nil
     }
     
     // MARK: - Public Methods
@@ -45,10 +46,6 @@ final class ColorCell: UICollectionViewCell {
     func configure(with color: UIColor, isSelected: Bool) {
         colorView.backgroundColor = color
         
-        if isSelected {
-            contentView.layer.borderColor = color.withAlphaComponent(0.3).cgColor
-        } else {
-            contentView.layer.borderColor = UIColor.clear.cgColor
-        }
+        contentView.layer.borderColor = isSelected ? color.withAlphaComponent(0.3).cgColor : UIColor.clear.cgColor
     }
 }

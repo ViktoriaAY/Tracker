@@ -150,8 +150,8 @@ final class TrackersViewController: UIViewController {
         
         collectionView.reloadData()
     }
-
-
+    
+    
     private func setupNavBar() {
         title = "Трекеры"
         let appearance = UINavigationBarAppearance()

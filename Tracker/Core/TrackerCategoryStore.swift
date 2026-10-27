@@ -56,7 +56,7 @@ final class TrackerCategoryStore: NSObject {
     }()
     
     // MARK: - Init
-
+    
     override init() {
         super.init()
     }
