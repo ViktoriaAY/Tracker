@@ -13,6 +13,8 @@ final class HabitCreationViewController: UIViewController {
     
     private var selectedSchedule: TrackerSchedule?
     private var selectedEmoji: String?
+    private var selectedCategoryTitle: String?
+    
     weak var delegate: HabitCreationViewControllerDelegate?
     
     private lazy var emojiCollectionView: UICollectionView = {
@@ -158,6 +160,8 @@ final class HabitCreationViewController: UIViewController {
         view.backgroundColor = .white
         title = "Новая привычка"
         navigationItem.leftBarButtonItem = nil
+        optionsTableView.dataSource = self
+        optionsTableView.delegate = self
         
         view.addSubview(scrollView)
         scrollView.addSubview(scrollContentView)
@@ -217,6 +221,8 @@ final class HabitCreationViewController: UIViewController {
         dismiss(animated: true)
     }
     
+    // MARK: - Actions
+    
     @objc private func didTapCreateMainButton() {
         guard let trackerTitle = trackerNameTextField.text, !trackerTitle.isEmpty else { return }
         
@@ -234,18 +240,22 @@ final class HabitCreationViewController: UIViewController {
         )
         
         let trackerStore = TrackerStore()
+        let targetCategoryTitle = selectedCategoryTitle ?? "Домашний уют"
         
         do {
-            try self.categoryStore.addCategory(title: "Домашний уют")
-            if let categoryCoreData = try self.categoryStore.fetchCategoryCoreData(with: "Домашний уют") {
+            
+            try self.categoryStore.addCategory(title: targetCategoryTitle)
+            
+            if let categoryCoreData = try self.categoryStore.fetchCategoryCoreData(with: targetCategoryTitle) {
                 try trackerStore.createTracker(newTracker, categoryCoreData: categoryCoreData)
                 CoreDataStack.shared.saveContext()
             }
         } catch {
-            print("Ошибка при записи трекера в базу данных: \(error)")
+            print("❌ Ошибка при записи трекера в базу данных Core Data: \(error)")
+            assertionFailure("Не удалось сохранить трекер на диск устройства: \(error.localizedDescription)")
         }
+        delegate?.didCreateTracker(newTracker, toCategory: targetCategoryTitle)
         
-        delegate?.didCreateTracker(newTracker, toCategory: "Домашний уют")
         dismiss(animated: true)
     }
 }
@@ -270,7 +280,7 @@ extension HabitCreationViewController: UITableViewDataSource, UITableViewDelegat
         
         if indexPath.row == 0 {
             cell.textLabel?.text = "Категория"
-            cell.detailTextLabel?.text = ""
+            cell.detailTextLabel?.text = selectedCategoryTitle ?? ""
         } else {
             cell.textLabel?.text = "Расписание"
             if let schedule = selectedSchedule {
@@ -281,13 +291,21 @@ extension HabitCreationViewController: UITableViewDataSource, UITableViewDelegat
         }
         return cell
     }
-    
+
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 75
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.row == 1 {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        if indexPath.row == 0 {
+            let categoryVC = CategorySelectionViewController()
+            categoryVC.delegate = self
+            categoryVC.selectedCategoryTitle = self.selectedCategoryTitle
+            navigationController?.pushViewController(categoryVC, animated: true)
+        }
+        else if indexPath.row == 1 {
             print("Переход на экран выбора Расписания")
             let scheduleVC = ScheduleViewController()
             scheduleVC.delegate = self
@@ -398,4 +416,14 @@ extension HabitCreationViewController: UICollectionViewDataSource, UICollectionV
         return CGSize(width: collectionView.frame.width, height: 48)
     }
 }
+
+// MARK: - CategorySelectionViewControllerDelegate
+
+extension HabitCreationViewController: CategorySelectionViewControllerDelegate {
+    func didSelectCategory(_ categoryTitle: String) {
+        self.selectedCategoryTitle = categoryTitle
+        self.optionsTableView.reloadData()
+    }
+}
+
 
