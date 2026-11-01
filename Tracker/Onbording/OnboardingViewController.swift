@@ -16,7 +16,7 @@ final class OnboardingViewController: UIPageViewController {
         
         let secondPage = OnboardingPageViewController(
             imageName: "Onboarding2",
-            text: "Даже если это не блины по утрам",
+            text: "Даже если это не литры воды и йога",
             buttonText: "Вот это технологии!",
             completion: { [weak self] in self?.switchToMainScreen() }
         )
@@ -27,7 +27,7 @@ final class OnboardingViewController: UIPageViewController {
         let control = UIPageControl()
         control.numberOfPages = pages.count
         control.currentPage = 0
-        control.currentPageIndicatorTintColor = .black // Или .blacktracker
+        control.currentPageIndicatorTintColor = .blacktracker
         control.pageIndicatorTintColor = .black.withAlphaComponent(0.3)
         control.addTarget(self, action: #selector(didTapPageControl(_:)), for: .valueChanged)
         control.translatesAutoresizingMaskIntoConstraints = false
@@ -56,7 +56,6 @@ final class OnboardingViewController: UIPageViewController {
         if let firstPage = pages.first {
             setViewControllers([firstPage], direction: .forward, animated: true, completion: nil)
         }
-        
         setupHierarchy()
         setupConstraints()
     }
@@ -64,10 +63,17 @@ final class OnboardingViewController: UIPageViewController {
     // MARK: - Actions
     
     @objc private func didTapPageControl(_ sender: UIPageControl) {
-        let targetIndex = sender.currentPage
-        let direction: UIPageViewController.NavigationDirection = targetIndex > pageControl.currentPage ? .forward : .reverse
-        setViewControllers([pages[targetIndex]], direction: direction, animated: true, completion: nil)
-    }
+            let targetIndex = sender.currentPage
+        
+            guard let currentVC = viewControllers?.first,
+                  let currentIndex = pages.firstIndex(of: currentVC) else { return }
+        
+            guard targetIndex != currentIndex else { return }
+        
+            let direction: UIPageViewController.NavigationDirection = targetIndex > currentIndex ? .forward : .reverse
+        
+            setViewControllers([pages[targetIndex]], direction: direction, animated: true, completion: nil)
+        }
     
     // MARK: - Private Methods
     
@@ -83,58 +89,20 @@ final class OnboardingViewController: UIPageViewController {
     }
     
     private func switchToMainScreen() {
-        UserDefaults.standard.set(true, forKey: "hasSeenOnboarding")
         
-        guard UIApplication.shared.connectedScenes
-            .compactMap({ $0 as? UIWindowScene })
-            .flatMap({ $0.windows })
-            .first(where: { $0.isKeyWindow }) != nil else { return }
+            UserDefaults.standard.set(true, forKey: "hasSeenOnboarding")
         
-        guard let window = UIApplication.shared.connectedScenes
-            .compactMap({ $0 as? UIWindowScene })
-            .flatMap({ $0.windows })
-            .first(where: { $0.isKeyWindow }) else { return }
+            guard let window = UIApplication.shared.connectedScenes
+                .compactMap({ $0 as? UIWindowScene })
+                .flatMap({ $0.windows })
+                .first(where: { $0.isKeyWindow }) else { return }
         
-        let trackersVC = TrackersViewController()
-        let trackersNav = UINavigationController(rootViewController: trackersVC)
-        trackersNav.navigationBar.prefersLargeTitles = true
+            let mainTabBarController = MainTabBarController()
         
-        trackersNav.tabBarItem = UITabBarItem(
-            title: "Трекеры",
-            image: UIImage(systemName: "record.circle.fill"),
-            tag: 0
-        )
-        
-        let statisticsVC = UIViewController()
-        statisticsVC.view.backgroundColor = .white
-        let statisticsNav = UINavigationController(rootViewController: statisticsVC)
-        statisticsNav.navigationBar.prefersLargeTitles = true
-        
-        statisticsNav.tabBarItem = UITabBarItem(
-            title: "Статистика",
-            image: UIImage(systemName: "hare.fill"), // Поменяй на свою картинку, если нужно
-            tag: 1
-        )
-        
-        let tabBarController = UITabBarController()
-        tabBarController.viewControllers = [trackersNav, statisticsNav]
-        
-        tabBarController.tabBar.tintColor = .systemBlue
-        tabBarController.tabBar.backgroundColor = .white
-        
-        let appearance = UITabBarAppearance()
-        appearance.configureWithDefaultBackground()
-        appearance.backgroundColor = .white
-        
-        tabBarController.tabBar.standardAppearance = appearance
-        tabBarController.tabBar.scrollEdgeAppearance = appearance
-        
-        tabBarController.tabBar.tintColor = .systemBlue
-        
-        UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: {
-            window.rootViewController = tabBarController
-        }, completion: nil)
-    }
+            UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: {
+                window.rootViewController = mainTabBarController
+            }, completion: nil)
+        }
 }
 
 // MARK: - UIPageViewControllerDataSource

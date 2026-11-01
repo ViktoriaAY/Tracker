@@ -103,8 +103,6 @@ final class HabitCreationViewController: UIViewController {
         return stack
     }()
     
-    
-    
     private var selectedColor: UIColor?
     
     private lazy var colorCollectionView: UICollectionView = {
@@ -291,7 +289,7 @@ extension HabitCreationViewController: UITableViewDataSource, UITableViewDelegat
         }
         return cell
     }
-
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 75
     }
@@ -302,7 +300,7 @@ extension HabitCreationViewController: UITableViewDataSource, UITableViewDelegat
         if indexPath.row == 0 {
             let categoryVC = CategorySelectionViewController()
             categoryVC.delegate = self
-            categoryVC.selectedCategoryTitle = self.selectedCategoryTitle
+            categoryVC.initialSelectedCategory = self.selectedCategoryTitle
             navigationController?.pushViewController(categoryVC, animated: true)
         }
         else if indexPath.row == 1 {

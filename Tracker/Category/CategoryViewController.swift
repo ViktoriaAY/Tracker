@@ -1,18 +1,18 @@
 import UIKit
 
-// MARK: - NewCategoryViewControllerDelegate
+// MARK: - CategoryViewControllerDelegate
 
-protocol NewCategoryViewControllerDelegate: AnyObject {
+protocol CategoryViewControllerDelegate: AnyObject {
     func didCreateCategory(with title: String)
 }
 
-// MARK: - NewCategoryViewController
+// MARK: - CategoryViewController
 
-final class NewCategoryViewController: UIViewController {
+final class CategoryViewController: UIViewController {
     
     // MARK: - Public Properties
     
-    weak var delegate: NewCategoryViewControllerDelegate?
+    weak var delegate: CategoryViewControllerDelegate?
     
     // MARK: - Private Properties
     
@@ -25,6 +25,9 @@ final class NewCategoryViewController: UIViewController {
         textField.leftViewMode = .always
         textField.clearButtonMode = .whileEditing
         textField.font = .systemFont(ofSize: 17, weight: .regular)
+        
+        textField.delegate = self
+        
         textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
@@ -33,7 +36,7 @@ final class NewCategoryViewController: UIViewController {
     private lazy var readyButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Готово", for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(.whitetracker, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.backgroundColor = UIColor(red: 0.68, green: 0.69, blue: 0.71, alpha: 1.0)
         button.layer.cornerRadius = 16
@@ -48,6 +51,7 @@ final class NewCategoryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupScreen()
+        setupTapGesture()
     }
     
     // MARK: - Actions
@@ -55,6 +59,7 @@ final class NewCategoryViewController: UIViewController {
     @objc private func textFieldDidChange(_ textField: UITextField) {
         guard let text = textField.text else { return }
         let isNotEmpty = !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        
         readyButton.isEnabled = isNotEmpty
         readyButton.backgroundColor = isNotEmpty ? .black : UIColor(red: 0.68, green: 0.69, blue: 0.71, alpha: 1.0)
     }
@@ -65,12 +70,16 @@ final class NewCategoryViewController: UIViewController {
         dismiss(animated: true)
     }
     
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
     // MARK: - Private Methods
     
     private func setupScreen() {
         view.backgroundColor = .white
         title = "Новая категория"
-        navigationItem.hidesBackButton = false
+        
         view.addSubview(categoryNameTextField)
         view.addSubview(readyButton)
         
@@ -86,5 +95,20 @@ final class NewCategoryViewController: UIViewController {
             readyButton.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
+    
+    private func setupTapGesture() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
+    }
 }
 
+// MARK: - UITextFieldDelegate
+
+extension CategoryViewController: UITextFieldDelegate {
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+}

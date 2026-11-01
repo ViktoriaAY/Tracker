@@ -1,5 +1,7 @@
 import UIKit
 
+// MARK: - CategorySelectionViewControllerDelegate
+
 protocol CategorySelectionViewControllerDelegate: AnyObject {
     func didSelectCategory(_ categoryTitle: String)
 }
@@ -8,21 +10,27 @@ protocol CategorySelectionViewControllerDelegate: AnyObject {
 
 final class CategorySelectionViewController: UIViewController {
     
+    // MARK: - Properties
+    
+    var initialSelectedCategory: String?
+    weak var delegate: CategorySelectionViewControllerDelegate?
+    
     // MARK: - Private Properties
     
-    private let viewModel = CategoryViewModel()
-    weak var delegate: CategorySelectionViewControllerDelegate?
-    var selectedCategoryTitle: String?
+    private lazy var viewModel = CategoryViewModel(selectedCategoryTitle: initialSelectedCategory)
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.layer.cornerRadius = 16
+        tableView.layer.masksToBounds = true
         tableView.separatorStyle = .singleLine
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         tableView.tintColor = .bluetracker
+        tableView.layoutMargins = .zero
+        tableView.cellLayoutMarginsFollowReadableWidth = false
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "CategoryCell")
+        tableView.register(CategoryTableViewCell.self, forCellReuseIdentifier: CategoryTableViewCell.identifier)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         return tableView
     }()
@@ -72,6 +80,8 @@ final class CategorySelectionViewController: UIViewController {
         view.backgroundColor = .white
         title = "Категория"
         
+        navigationItem.hidesBackButton = false
+        
         view.addSubview(tableView)
         view.addSubview(addCategoryButton)
         view.addSubview(placeholderImageView)
@@ -111,11 +121,17 @@ final class CategorySelectionViewController: UIViewController {
             self?.tableView.reloadData()
             self?.reloadPlaceholderVisibility()
         }
+        
+        viewModel.onCategorySelected = { [weak self] selectedTitle in
+            self?.delegate?.didSelectCategory(selectedTitle)
+            self?.navigationController?.popViewController(animated: true)
+        }
+        
         reloadPlaceholderVisibility()
     }
     
     @objc private func didTapAddCategoryButton() {
-        let newCategoryVC = NewCategoryViewController()
+        let newCategoryVC = CategoryViewController()
         newCategoryVC.delegate = self
         let navigationController = UINavigationController(rootViewController: newCategoryVC)
         present(navigationController, animated: true)
@@ -131,39 +147,30 @@ extension CategorySelectionViewController: UITableViewDataSource, UITableViewDel
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
-        cell.backgroundColor = UIColor(red: 0.94, green: 0.95, blue: 0.97, alpha: 1.0)
-        cell.selectionStyle = .none
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: CategoryTableViewCell.identifier, for: indexPath) as? CategoryTableViewCell else {
+            return UITableViewCell()
+        }
         
-        let currentCategoryTitle = viewModel.categoryTitle(at: indexPath)
-        cell.textLabel?.text = currentCategoryTitle
+        let title = viewModel.categoryTitle(at: indexPath)
+        let isSelected = viewModel.isCategorySelected(at: indexPath)
         
-        let isSelected = (currentCategoryTitle == selectedCategoryTitle)
-        cell.accessoryType = isSelected ? .checkmark : .none
+        cell.configure(with: title, isSelected: isSelected)
         
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        viewModel.selectCategory(at: indexPath)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 75
     }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedTitle = viewModel.categoryTitle(at: indexPath)
-        
-        selectedCategoryTitle = selectedTitle
-        
-        tableView.reloadData()
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-            self?.delegate?.didSelectCategory(selectedTitle)
-            self?.navigationController?.popViewController(animated: true)
-        }
-    }
 }
+
 // MARK: - NewCategoryViewControllerDelegate
 
-extension CategorySelectionViewController: NewCategoryViewControllerDelegate {
+extension CategorySelectionViewController: CategoryViewControllerDelegate {
     func didCreateCategory(with title: String) {
         viewModel.addCategory(title: title)
     }
