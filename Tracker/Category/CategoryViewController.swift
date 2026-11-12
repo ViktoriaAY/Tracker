@@ -18,16 +18,14 @@ final class CategoryViewController: UIViewController {
     
     private lazy var categoryNameTextField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Введите название категории"
-        textField.backgroundColor = UIColor(red: 0.94, green: 0.95, blue: 0.97, alpha: 1.0)
+        textField.placeholder = "category_name_placeholder".localized
+        textField.backgroundColor = .backgroundtracker
         textField.layer.cornerRadius = 16
         textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
         textField.leftViewMode = .always
         textField.clearButtonMode = .whileEditing
         textField.font = .systemFont(ofSize: 17, weight: .regular)
-        
         textField.delegate = self
-        
         textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
@@ -35,10 +33,10 @@ final class CategoryViewController: UIViewController {
     
     private lazy var readyButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Готово", for: .normal)
+        button.setTitle("ready_button".localized, for: .normal)
         button.setTitleColor(.whitetracker, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
-        button.backgroundColor = UIColor(red: 0.68, green: 0.69, blue: 0.71, alpha: 1.0)
+        button.backgroundColor = .backgroundtracker
         button.layer.cornerRadius = 16
         button.isEnabled = false
         button.addTarget(self, action: #selector(didTapReadyButton), for: .touchUpInside)
@@ -61,7 +59,7 @@ final class CategoryViewController: UIViewController {
         let isNotEmpty = !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         
         readyButton.isEnabled = isNotEmpty
-        readyButton.backgroundColor = isNotEmpty ? .black : UIColor(red: 0.68, green: 0.69, blue: 0.71, alpha: 1.0)
+        readyButton.backgroundColor = isNotEmpty ? .blacktracker : UIColor(red: 0.68, green: 0.69, blue: 0.71, alpha: 1.0)
     }
     
     @objc private func didTapReadyButton() {
@@ -77,8 +75,8 @@ final class CategoryViewController: UIViewController {
     // MARK: - Private Methods
     
     private func setupScreen() {
-        view.backgroundColor = .white
-        title = "Новая категория"
+        view.backgroundColor = .whitetracker
+        title = "new_category_title".localized
         
         view.addSubview(categoryNameTextField)
         view.addSubview(readyButton)

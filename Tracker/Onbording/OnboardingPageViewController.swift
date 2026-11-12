@@ -16,7 +16,7 @@ final class OnboardingPageViewController: UIViewController {
     private let textLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 32, weight: .bold)
-        label.textColor = .black
+        label.textColor = .blacktracker
         label.textAlignment = .center
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -27,8 +27,8 @@ final class OnboardingPageViewController: UIViewController {
         let button = UIButton(type: .system)
         button.backgroundColor = .blacktracker
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
-        button.setTitleColor(.white, for: .normal)
-        button.setTitle("Вот это технологии!", for: .normal)
+        button.setTitleColor(.whitetracker, for: .normal)
+        button.setTitle("onboarding_button".localized, for: .normal)
         button.layer.cornerRadius = 16
         button.addTarget(self, action: #selector(didTapConfirmButton), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false

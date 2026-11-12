@@ -1,28 +1,38 @@
 import UIKit
 
+// MARK: - ScheduleViewControllerDelegate Protocol
+
 protocol ScheduleViewControllerDelegate: AnyObject {
     func didSelectSchedule(_ schedule: TrackerSchedule)
 }
 
+// MARK: - ScheduleViewController Class
+
 final class ScheduleViewController: UIViewController {
     
-    weak var delegate: ScheduleViewControllerDelegate?
+    // MARK: - WeekdayIndex Enum
     
     private enum WeekdayIndex: Int, CaseIterable {
         case monday = 0, tuesday, wednesday, thursday, friday, saturday, sunday
         
-        var russianName: String {
+        var localizedName: String {
             switch self {
-            case .monday: return "Понедельник"
-            case .tuesday: return "Вторник"
-            case .wednesday: return "Среда"
-            case .thursday: return "Четверг"
-            case .friday: return "Пятница"
-            case .saturday: return "Суббота"
-            case .sunday: return "Воскресенье"
+            case .monday: return "monday_full".localized
+            case .tuesday: return "tuesday_full".localized
+            case .wednesday: return "wednesday_full".localized
+            case .thursday: return "thursday_full".localized
+            case .friday: return "friday_full".localized
+            case .saturday: return "saturday_full".localized
+            case .sunday: return "sunday_full".localized
             }
         }
     }
+    
+    // MARK: - Public Properties
+    
+    weak var delegate: ScheduleViewControllerDelegate?
+    
+    // MARK: - Private Properties
     
     private var mondayState = false
     private var tuesdayState = false
@@ -41,10 +51,10 @@ final class ScheduleViewController: UIViewController {
         tableView.layer.masksToBounds = true
         tableView.isScrollEnabled = false
         tableView.separatorStyle = .singleLine
+        tableView.separatorColor = .graytracker
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         tableView.tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: CGFloat.leastNormalMagnitude))
         tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: CGFloat.leastNormalMagnitude))
-        
         tableView.dataSource = self
         tableView.delegate = self
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -55,8 +65,8 @@ final class ScheduleViewController: UIViewController {
     
     private lazy var doneButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Готово", for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitle("ready_button".localized, for: .normal)
+        button.setTitleColor(.whitetracker, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.backgroundColor = .blacktracker
         button.layer.cornerRadius = 16
@@ -66,14 +76,20 @@ final class ScheduleViewController: UIViewController {
     }()
     
     // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupScreen()
     }
     
+    // MARK: - Private Methods
+    
     private func setupScreen() {
-        view.backgroundColor = .white
-        title = "Расписание"
+        view.backgroundColor = .whitetracker
+        title = "schedule_title".localized
+        
+        navigationItem.hidesBackButton = true
+        navigationItem.leftBarButtonItem = nil
         
         view.addSubview(scheduleTableView)
         view.addSubview(doneButton)
@@ -83,7 +99,6 @@ final class ScheduleViewController: UIViewController {
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            
             scheduleTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
             scheduleTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             scheduleTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
@@ -96,8 +111,8 @@ final class ScheduleViewController: UIViewController {
         ])
     }
     
-    
     // MARK: - Actions
+    
     @objc private func switchChanged(_ sender: UISwitch) {
         switch sender.tag {
         case 0: mondayState = sender.isOn
@@ -127,6 +142,7 @@ final class ScheduleViewController: UIViewController {
 }
 
 // MARK: - UITableViewDataSource & UITableViewDelegate
+
 extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -136,17 +152,21 @@ extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "WeekdayCell", for: indexPath)
         
-        
         cell.backgroundColor = .clear
         cell.selectionStyle = .none
         
         guard let day = WeekdayIndex(rawValue: indexPath.row) else { return cell }
-        cell.textLabel?.text = day.russianName
+        cell.textLabel?.text = day.localizedName
         cell.textLabel?.font = .systemFont(ofSize: 16, weight: .medium)
-        cell.textLabel?.textColor = .black
+        cell.textLabel?.textColor = .blacktracker
+        
+        let isLastRow = indexPath.row == 6
+        cell.separatorInset = isLastRow
+        ? UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
+        : UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         
         let switchView = UISwitch()
-        switchView.onTintColor = .systemBlue
+        switchView.onTintColor = .bluetracker
         switchView.tag = indexPath.row
         switchView.addTarget(self, action: #selector(switchChanged(_:)), for: .valueChanged)
         
@@ -169,4 +189,3 @@ extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
         return 75
     }
 }
-

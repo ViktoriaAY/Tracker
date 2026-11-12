@@ -131,6 +131,36 @@ final class TrackerStore: NSObject {
             schedule: schedule(from: scheduleStr)
         )
     }
+    
+    func deleteTracker(with id: UUID) throws {
+        let fetchRequest = NSFetchRequest<TrackerCoreData>(entityName: "TrackerCoreData")
+        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        
+        if let trackerToDelete = try context.fetch(fetchRequest).first {
+            context.delete(trackerToDelete)
+            try context.save()
+        }
+    }
+    
+    func updateTracker(_ tracker: Tracker, categoryCoreData: TrackerCategoryCoreData) throws {
+        let fetchRequest = NSFetchRequest<TrackerCoreData>(entityName: "TrackerCoreData")
+        fetchRequest.predicate = NSPredicate(format: "id == %@", tracker.id as CVarArg)
+        
+        if let trackerCoreData = try context.fetch(fetchRequest).first {
+            trackerCoreData.title = tracker.title
+            trackerCoreData.emoji = tracker.emoji
+            trackerCoreData.colorHex = hexString(from: tracker.color)
+            
+            if let schedule = tracker.schedule {
+                trackerCoreData.schedule = scheduleString(from: schedule)
+            } else {
+                trackerCoreData.schedule = ""
+            }
+            
+            trackerCoreData.category = categoryCoreData
+            try context.save()
+        }
+    }
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
