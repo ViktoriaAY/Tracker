@@ -19,7 +19,6 @@ final class TrackerRecordStore: NSObject {
         return CoreDataStack.shared.context
     }
     
-    
     private lazy var fetchedResultsController: NSFetchedResultsController<TrackerRecordCoreData> = {
         let fetchRequest = NSFetchRequest<TrackerRecordCoreData>(entityName: "TrackerRecordCoreData")
         fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \TrackerRecordCoreData.date, ascending: true)]
@@ -37,9 +36,8 @@ final class TrackerRecordStore: NSObject {
     // MARK: - Public Properties
     
     var records: [TrackerRecord] {
-        if fetchedResultsController.fetchedObjects == nil {
             try? fetchedResultsController.performFetch()
-        }
+    
         guard let objects = fetchedResultsController.fetchedObjects else { return [] }
         return objects.compactMap {
             guard let id = $0.id, let date = $0.date else { return nil }
@@ -78,6 +76,16 @@ final class TrackerRecordStore: NSObject {
             try context.save()
         }
     }
+    
+    func deleteTracker(with id: UUID) throws {
+        let fetchRequest = NSFetchRequest<TrackerCoreData>(entityName: "TrackerCoreData")
+        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        
+        if let trackerToDelete = try context.fetch(fetchRequest).first {
+            context.delete(trackerToDelete)
+            try context.save()
+        }
+    }
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
@@ -88,3 +96,4 @@ extension TrackerRecordStore: NSFetchedResultsControllerDelegate {
         delegate?.storeDidChangeRecords()
     }
 }
+ 

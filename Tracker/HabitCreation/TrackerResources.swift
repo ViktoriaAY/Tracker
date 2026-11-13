@@ -31,3 +31,10 @@ enum TrackerResources {
         UIColor(red: 0.18, green: 0.82, blue: 0.35, alpha: 1.0)
     ]
 }
+
+extension String {
+    var localized: String {
+        return NSLocalizedString(self, comment: "")
+    }
+}
+

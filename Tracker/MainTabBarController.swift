@@ -16,23 +16,27 @@ final class MainTabBarController: UITabBarController {
     
     private func setupTabs() {
         let trackersViewController = TrackersViewController()
-        
         let trackersNC = UINavigationController(rootViewController: trackersViewController)
-        
         trackersNC.navigationBar.prefersLargeTitles = true
-        trackersViewController.title = "Трекеры"
+        trackersViewController.title = "trackers_title".localized 
         trackersNC.tabBarItem = UITabBarItem(
-            title: "Трекеры",
+            title: "trackers_title".localized,
             image: UIImage(named: "tab_bar_item"),
             selectedImage: nil
         )
+        
         let statisticsVC = StatisticsViewController()
-        statisticsVC.tabBarItem = UITabBarItem(
-            title: "Статистика",
+        let statisticsNC = UINavigationController(rootViewController: statisticsVC)
+        statisticsNC.navigationBar.prefersLargeTitles = true
+        statisticsVC.title = "statistics_title".localized
+        statisticsNC.tabBarItem = UITabBarItem(
+            title: "statistics_title".localized,
             image: UIImage(named: "tab_bar_bunny"),
             selectedImage: nil
         )
-        viewControllers = [trackersNC, statisticsVC]
+        
+        viewControllers = [trackersNC, statisticsNC]
+        
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = .whitetracker

@@ -35,7 +35,9 @@ final class CategoryTableViewCell: UITableViewCell {
     
     // MARK: - Private Methods
     private func setupCell() {
-        backgroundColor = UIColor(red: 0.94, green: 0.95, blue: 0.97, alpha: 1.0)
+        backgroundColor = .clear
+        contentView.backgroundColor = .clear
+        
         selectionStyle = .none
         tintColor = .bluetracker
         

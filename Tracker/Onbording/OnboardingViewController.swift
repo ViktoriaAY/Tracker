@@ -9,15 +9,15 @@ final class OnboardingViewController: UIPageViewController {
     private lazy var pages: [UIViewController] = {
         let firstPage = OnboardingPageViewController(
             imageName: "Onboarding1",
-            text: "Отслеживайте только то, что хотите",
-            buttonText: "Вот это технологии!",
+            text: "onboarding_page1_text".localized,
+            buttonText: "onboarding_button".localized,
             completion: { [weak self] in self?.switchToMainScreen() }
         )
         
         let secondPage = OnboardingPageViewController(
             imageName: "Onboarding2",
-            text: "Даже если это не литры воды и йога",
-            buttonText: "Вот это технологии!",
+            text: "onboarding_page2_text".localized,
+            buttonText: "onboarding_button".localized,
             completion: { [weak self] in self?.switchToMainScreen() }
         )
         return [firstPage, secondPage]
@@ -63,17 +63,17 @@ final class OnboardingViewController: UIPageViewController {
     // MARK: - Actions
     
     @objc private func didTapPageControl(_ sender: UIPageControl) {
-            let targetIndex = sender.currentPage
+        let targetIndex = sender.currentPage
         
-            guard let currentVC = viewControllers?.first,
-                  let currentIndex = pages.firstIndex(of: currentVC) else { return }
+        guard let currentVC = viewControllers?.first,
+              let currentIndex = pages.firstIndex(of: currentVC) else { return }
         
-            guard targetIndex != currentIndex else { return }
+        guard targetIndex != currentIndex else { return }
         
-            let direction: UIPageViewController.NavigationDirection = targetIndex > currentIndex ? .forward : .reverse
+        let direction: UIPageViewController.NavigationDirection = targetIndex > currentIndex ? .forward : .reverse
         
-            setViewControllers([pages[targetIndex]], direction: direction, animated: true, completion: nil)
-        }
+        setViewControllers([pages[targetIndex]], direction: direction, animated: true, completion: nil)
+    }
     
     // MARK: - Private Methods
     
@@ -89,20 +89,19 @@ final class OnboardingViewController: UIPageViewController {
     }
     
     private func switchToMainScreen() {
+        UserDefaults.standard.set(true, forKey: "hasSeenOnboarding")
         
-            UserDefaults.standard.set(true, forKey: "hasSeenOnboarding")
+        guard let window = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .flatMap({ $0.windows })
+            .first(where: { $0.isKeyWindow }) else { return }
         
-            guard let window = UIApplication.shared.connectedScenes
-                .compactMap({ $0 as? UIWindowScene })
-                .flatMap({ $0.windows })
-                .first(where: { $0.isKeyWindow }) else { return }
+        let mainTabBarController = MainTabBarController()
         
-            let mainTabBarController = MainTabBarController()
-        
-            UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: {
-                window.rootViewController = mainTabBarController
-            }, completion: nil)
-        }
+        UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: {
+            window.rootViewController = mainTabBarController
+        }, completion: nil)
+    }
 }
 
 // MARK: - UIPageViewControllerDataSource

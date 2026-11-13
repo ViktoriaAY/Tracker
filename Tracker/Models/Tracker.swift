@@ -1,5 +1,7 @@
 import UIKit
 
+// MARK: - Tracker Model
+
 struct Tracker {
     let id: UUID
     let title: String
@@ -7,6 +9,8 @@ struct Tracker {
     let emoji: String
     let schedule: TrackerSchedule?
 }
+
+// MARK: - TrackerSchedule Model
 
 struct TrackerSchedule {
     let monday: Bool
@@ -17,6 +21,8 @@ struct TrackerSchedule {
     let saturday: Bool
     let sunday: Bool
 }
+
+// MARK: - TrackerSchedule Extension (Weekday Verification)
 
 extension TrackerSchedule {
     func isScheduled(on weekdayIndex: Int) -> Bool {
@@ -33,20 +39,22 @@ extension TrackerSchedule {
     }
 }
 
+// MARK: - TrackerSchedule Extension (Localization Logic)
+
 extension TrackerSchedule {
     func getShortString() -> String {
         if monday && tuesday && wednesday && thursday && friday && saturday && sunday {
-            return "Каждый день"
+            return "every_day".localized
         }
         
         var days: [String] = []
-        if monday { days.append("Пн") }
-        if tuesday { days.append("Вт") }
-        if wednesday { days.append("Ср") }
-        if thursday { days.append("Чт") }
-        if friday { days.append("Пт") }
-        if saturday { days.append("Сб") }
-        if sunday { days.append("Вс") }
+        if monday { days.append("monday_short".localized) }
+        if tuesday { days.append("tuesday_short".localized) }
+        if wednesday { days.append("wednesday_short".localized) }
+        if thursday { days.append("thursday_short".localized) }
+        if friday { days.append("friday_short".localized) }
+        if saturday { days.append("saturday_short".localized) }
+        if sunday { days.append("sunday_short".localized) }
         
         if days.isEmpty {
             return ""
